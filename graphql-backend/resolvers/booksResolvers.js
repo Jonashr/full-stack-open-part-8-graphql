@@ -8,8 +8,12 @@ const booksResolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     allBooks: async (root, args, context) => {
-      const books = await Book.find({}).populate('author')
-      return books
+
+      console.log('All books args', args)
+      if(args.genre) {
+        return await Book.find({ genres: { $in: [args.genre] }}).populate('author')
+      }
+      return await Book.find({}).populate('author')
     }
   },
   Mutation: {
@@ -17,7 +21,7 @@ const booksResolvers = {
       if(!context.currentUser) {
         throw new AuthenticationError('User not authenticated.')
       }
-
+      
       let author = await Author.findOne({ name: args.author })
 
       if(!author) {

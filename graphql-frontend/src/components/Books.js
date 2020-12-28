@@ -1,11 +1,24 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 
 const Books = ({ show, books }) => {
-  console.log('BOOKS', books)
+  const [filter, setFilter] = useState(null)
   if (!show ) {
     return null
   }
+
+  if(books.length === 0) {
+    return <div>No books has been added yet.</div>
+  }
+
+  let allGenres = []
+  books.forEach(book => {
+    allGenres = allGenres.concat(book.genres)
+  })
+
+  allGenres = [ ...new Set(allGenres)]
+
+  const filteredBooks = filter ? books.filter(book => book.genres.includes(filter)) : books 
 
   return (
     <div>
@@ -22,7 +35,7 @@ const Books = ({ show, books }) => {
               published
             </th>
           </tr>
-          {books.map(book =>
+          {filteredBooks.map(book =>
             <tr key={book.title}>
               <td>{book.title}</td>
               <td>{book.author.name}</td>
@@ -31,6 +44,10 @@ const Books = ({ show, books }) => {
           )}
         </tbody>
       </table>
+      { allGenres.map(genre => (
+        <button key={genre} onClick={() => setFilter(genre)}>{genre}</button>
+      ))}
+      <button onClick={() => setFilter(null)}>All genres</button>
     </div>
   )
 }

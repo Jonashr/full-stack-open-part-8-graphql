@@ -4,19 +4,20 @@ import { useMutation } from '@apollo/client'
 import { UPDATE_BIRTH_YEAR } from '../queries'
 import Select from 'react-select'
 
-const Authors = ({ show, authors}) => {
+const Authors = ({ show, authors, token}) => {
   const [ born, setBornTo] = useState('')
   const [ name, setName] = useState('')
 
   const [ updateBirthYear ] = useMutation(UPDATE_BIRTH_YEAR) 
 
   
-  if (!show || authors.length === 0) {
+  if (!show) {
     return null
   }
 
-  console.log('Authors..', authors)
-
+  if(authors.length === 0) {
+    return <div>No Authors has been added yet.</div>
+  }
 
   const authorValues = authors.map(author => {
     return ({
@@ -59,22 +60,25 @@ const Authors = ({ show, authors}) => {
         </tbody>
       </table>
 
-      <form onSubmit={handleNameChange}>
-        <div>
-          <Select 
-            defaultValue={authorValues[0].value}
-            isMulti={false}
-            options={authorValues}
-            value={name}
-            onChange={(name => setName(name))}
-          />
-        </div>
-        <div>
-          <label>Birth year</label>
-          <input type='number' value={born} onChange={({ target}) => setBornTo(Number(target.value))} />
-        </div>
-        <button type='submit'>Change birth year</button>
-      </form>      
+      { token &&
+          <form onSubmit={handleNameChange}>
+          <div>
+            <Select 
+              defaultValue={authorValues[0].value}
+              isMulti={false}
+              options={authorValues}
+              value={name}
+              onChange={(name => setName(name))}
+            />
+          </div>
+          <div>
+            <label>Birth year</label>
+            <input type='number' value={born} onChange={({ target}) => setBornTo(Number(target.value))} />
+          </div>
+          <button type='submit'>Change birth year</button>
+        </form>   
+      }
+   
     </div>
   )
 }
