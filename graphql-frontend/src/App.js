@@ -81,7 +81,7 @@ const App = () => {
 
       <Books
         show={page === 'books'}
-        books={books.data.allBooks}
+        allBooks={books.data.allBooks}
       />
 
       <Recommendations

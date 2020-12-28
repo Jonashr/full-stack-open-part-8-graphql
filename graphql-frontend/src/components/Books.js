@@ -1,8 +1,21 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useLazyQuery } from '@apollo/client'
+import { ALL_BOOKS } from '../queries'
 
+const Books = ({ show, allBooks }) => {
+  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const [books, setBooks] = useState(allBooks)
 
-const Books = ({ show, books }) => {
-  const [filter, setFilter] = useState(null)
+  const showBooksByGenres = genre => {
+    getBooks({ variables: { genre }})
+  }
+
+  useEffect(() => {
+    if(result.data) {
+      setBooks(result.data.allBooks)
+    }
+  }, [result])
+
   if (!show ) {
     return null
   }
@@ -12,13 +25,11 @@ const Books = ({ show, books }) => {
   }
 
   let allGenres = []
-  books.forEach(book => {
+  allBooks.forEach(book => {
     allGenres = allGenres.concat(book.genres)
   })
 
   allGenres = [ ...new Set(allGenres)]
-
-  const filteredBooks = filter ? books.filter(book => book.genres.includes(filter)) : books 
 
   return (
     <div>
@@ -35,7 +46,7 @@ const Books = ({ show, books }) => {
               published
             </th>
           </tr>
-          {filteredBooks.map(book =>
+          {books.map(book =>
             <tr key={book.title}>
               <td>{book.title}</td>
               <td>{book.author.name}</td>
@@ -45,9 +56,9 @@ const Books = ({ show, books }) => {
         </tbody>
       </table>
       { allGenres.map(genre => (
-        <button key={genre} onClick={() => setFilter(genre)}>{genre}</button>
+        <button key={genre} onClick={() => showBooksByGenres(genre)}>{genre}</button>
       ))}
-      <button onClick={() => setFilter(null)}>All genres</button>
+      <button onClick={() => showBooksByGenres(null)}>All genres</button>
     </div>
   )
 }
