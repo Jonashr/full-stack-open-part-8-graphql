@@ -8,10 +8,8 @@ const booksResolvers = {
   Query: {
     bookCount: () => Book.collection.countDocuments(),
     allBooks: async (root, args, context) => {
-
-      console.log('All books args', args)
       if(args.genre) {
-        return await Book.find({ genres: { $in: [args.genre] }}).populate('author')
+        return await Book.find({ genres: { $in: [args.genres] }}).populate('author')
       }
       return await Book.find({}).populate('author')
     }
